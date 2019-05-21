@@ -1,7 +1,5 @@
 <?php
 
-//use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,16 +11,9 @@
 |
 */
 
-//Route::middleware('auth:api')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
-
 Route::namespace('\App\Http\Controllers\API\V1')->prefix('v1')->group(function () {
     Route::prefix('urls')->group(function () {
         Route::get('/', 'URLController@index');
         Route::post('/store', 'URLController@store');
-        Route::put('/update', 'URLController@store');
-        Route::get('/show/{token}', 'URLController@store');
-        Route::delete('/show/{token}', 'URLController@store');
     });
 });

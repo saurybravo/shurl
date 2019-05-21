@@ -2,10 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\UrlServices;
 use Illuminate\Http\Request;
 
 class RedirectController extends Controller
 {
+    /**
+     * @var UrlServices
+     */
+    private $url;
+
+    public function __construct(UrlServices $url)
+    {
+        $this->url = $url;
+    }
+
     /**
      * Handle the incoming request.
      *
@@ -15,6 +26,6 @@ class RedirectController extends Controller
      */
     public function __invoke(Request $request, $token)
     {
-        dd($token);
+        return $this->url->redirectToReferrerUrl($token);
     }
 }

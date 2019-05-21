@@ -15,8 +15,8 @@ class CreateURLSTable extends Migration
     {
         Schema::create('urls', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('token')->index();
-            $table->string('reference_url')->index();
+            $table->string('token', 8)->index();
+            $table->mediumText('referrer_url');
             $table->unsignedBigInteger('visits')->default(0);
             $table->softDeletes();
             $table->timestamps();

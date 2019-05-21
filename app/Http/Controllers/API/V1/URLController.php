@@ -1,6 +1,7 @@
 <?php namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UrlCollection;
 use App\Services\URLServices;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -30,9 +31,7 @@ class URLController extends Controller
      */
     public function index(Request $request)
     {
-        $urls = $this->url->getAllPaginate($request->get('perpage', 100));
-
-        return response()->json($urls);
+        return new UrlCollection($this->url->getAllPaginate($request->get('perpage', 100)));
     }
 
     /**
@@ -43,48 +42,23 @@ class URLController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), ['reference_url' => 'required|url']);
+        $validator = Validator::make($request->all(), ['referrer_url' => 'required|url']);
 
         if ($validator->fails())
             return response()->json(['errors' => $validator->errors()], 400);
 
-        $token = $this->url->generateToken(8);
 
-        return response()->json(['token' => $token], 200);
+        $url = $this->url->whereReferrerUrl($request->get('referrer_url'))->first();
+        if ($url == null)
+        {
+            $token = $this->url->generateToken(8);
+            $url = $this->url->create(['token' => $token, 'referrer_url' => $request->get('referrer_url')]);
+        }
 
-    }
+        return response()->json([
+            'referrer_url' => $url->referrer_url,
+            'shortened_url' => $url->shortened_url,
+        ], 200);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\URLs  $uRLs
-     * @return Response
-     */
-    public function show(URLs $uRLs)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\URLs  $uRLs
-     * @return Response
-     */
-    public function update(Request $request, URLs $uRLs)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\URLs  $uRLs
-     * @return Response
-     */
-    public function destroy(URLs $uRLs)
-    {
-        //
     }
 }
